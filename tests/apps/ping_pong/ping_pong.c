@@ -5,6 +5,9 @@
 
 void* ping_pong(void *threadid);
 
+int global1 = 0;
+//int global2 = 0;
+
 int main(int argc, char* argv[])  // main begins
 {
    CarbonStartSim(argc, argv);
@@ -21,8 +24,6 @@ int main(int argc, char* argv[])  // main begins
    for(unsigned int i = 0; i < num_threads; i++)
        CarbonJoinThread(threads[i]);
 
-   printf("Finished running PingPong!.\n");
-
    CarbonStopSim();
    return 0;
 } // main ends
@@ -30,20 +31,18 @@ int main(int argc, char* argv[])  // main begins
 
 void* ping_pong(void *threadid)
 {
-   int junk;
-   int tid = (int)threadid;
-   printf("Thread: %d spawned!\n", tid);
+    CAPI_Initialize((int)threadid);
 
-   CAPI_Initialize((int)threadid);
+    if ((int)threadid==0) global1++;
+//    if ((int)threadid==1) global2++;
 
-   //FIXME: there is a race condition on claiming a comm id...
-   
-   sleep(5);
+    if ((int)threadid==1) printf("global var has value: %d\n", global1);
 
-   printf("sending.\n");
-   CAPI_message_send_w((CAPI_endpoint_t) tid, !tid, (char*) &junk, sizeof(int));
-   CAPI_message_receive_w((CAPI_endpoint_t) !tid, tid, (char*) &junk, sizeof(int));
-   
+   // if (global1==1) printf("Reading global1\n");
+   // if (global2==1) printf("Reading global2\n");
+
+//    if (global1==1) printf("I'm thread %d and I see global1 = %d !\n",tid,global1);
+//    if (global2==1) printf("I'm thread %d and I see global2 = %d !\n",tid,global2);
 
    return NULL;
 }
