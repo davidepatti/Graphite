@@ -44,7 +44,7 @@ void annotate_address_home(char * label,long unsigned int address, int size)
 {
     FILE * fp;
     printf("writing annotated regions\n");
-    fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "w+");
+    fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "a+");
     int granularity = 1;
     int n_controllers = 2;
     int id = (address>>granularity)%n_controllers;

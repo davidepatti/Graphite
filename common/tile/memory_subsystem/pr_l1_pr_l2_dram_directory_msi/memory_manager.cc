@@ -276,8 +276,11 @@ MemoryManager::handleMsgFromNetwork(NetPacket& packet)
 
          case MemComponent::L2_CACHE:
             _dram_directory_cntlr->handleMsgFromL2Cache(sender.tile_id, shmem_msg);
-            break;
 
+            // Added for MEM_ANN
+            //MY_LOG_PRINT(",APPROXIKIT,adddress:%#lx,size:%i,src:%i,dst:%i",shmem_msg->getAddress(), _cache_line_size, sender.tile_id, packet.receiver.tile_id); break;
+
+            MY_LOG_PRINT("DRAM addr:%lx size:%d src:%d dst:%d",shmem_msg->getAddress(), _cache_line_size, sender.tile_id, packet.receiver.tile_id); break;
          default:
             LOG_PRINT_ERROR("Unrecognized sender component(%u)",
                   sender_mem_component);
@@ -292,6 +295,8 @@ MemoryManager::handleMsgFromNetwork(NetPacket& packet)
    }
 
    // Delete the allocated Shared Memory Message
+   // G_PRINT(",MY_MEM,%#lx,%i,%i,%i",shmem_msg->getAddress(),
+   //                     _cache_line_size, sender.tile_id, packet.receiver.tile_id);
    // First delete 'data_buf' if it is present
    // LOG_PRINT("Finished handling Shmem Msg");
 

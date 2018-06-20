@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define MAX_REGIONS 10
+#define MAX_REGIONS 5000
 #define MAX_THREADS 65
 #define NOT_VALID 0
 
@@ -15,7 +15,7 @@ Region regions[MAX_REGIONS];
 
 int main(int argc, char *argv[])
 {
-    int bufSize = 128;
+    int bufSize = 256;
     char label[50];
     int granularity,n_controllers,size,src,dst; 
     long unsigned address;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         //printf("Reading-> %s\n", buf);
         sscanf(buf,"LABEL:%s g:%d nc:%d addr:%lx size:%d\n",label,&granularity,&n_controllers,&address,&size);
 
-        printf("Analysing region [%s](%lx-%lx,%d)\n",label,address,address+size,size);
+        printf("Loading region [%s](%lx-%lx,%d)\n",label,address,address+size,size);
 
         strcpy(regions[current_region].label,label);
         regions[current_region].address = address;
@@ -81,7 +81,10 @@ int main(int argc, char *argv[])
         {
             int region_start = regions[i].address;
             int region_end = regions[i].address+regions[i].size;
-            if ( address >= region_start && address <= region_end)
+            int address_end = address + size;
+            int address_start = address;
+
+            if ( address_start <= region_end && address_end >= region_start)
             {
                 communications[src][dst]++;
             }

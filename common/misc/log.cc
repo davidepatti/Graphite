@@ -270,6 +270,7 @@ void Log::getFile(tile_id_t tile_id, bool sim_thread, FILE **file, Lock **lock)
 
 string Log::getModule(const char *filename)
 {
+
    // TODO: Give each thread a _module map to cache entries. (Hash table?)
 
    // ScopedLock sl(_modules_lock);
