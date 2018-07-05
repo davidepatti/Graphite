@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define MAX_REGIONS 5000
+#define MAX_REGIONS 10000
 #define MAX_THREADS 65
 #define NOT_VALID 0
 
@@ -16,7 +16,7 @@ Region regions[MAX_REGIONS];
 int main(int argc, char *argv[])
 {
     int bufSize = 256;
-    char label[50];
+    char label[100];
     int granularity,n_controllers,size,src,dst; 
     long unsigned address;
 
@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     }
     fclose(fp);
 
+    int total_bytes = 0;
     printf("----------------------------------------\n");
     printf(" approximate communication list \n");
     printf("----------------------------------------\n");
@@ -102,7 +103,12 @@ int main(int argc, char *argv[])
         {
             // assuming send size of cacheline 64 bytes
             if (communications[i][j]!=0)
+            {
                 printf("src: %d dst: %d occurences: %d total bytes: %d\n",i,j,communications[i][j],communications[i][j]*64);
+                total_bytes+=communications[i][j]*64;
+            }
+
         }
 
+    printf("** Total bytes in this communication list: %d\n",total_bytes);
 }

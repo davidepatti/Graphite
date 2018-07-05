@@ -39,7 +39,7 @@ using namespace tbb;
 #include "approxikit.h"
 
 using namespace std;
-#define BER 1e-6
+#define BER 1e-5
 #define MAXNAMESIZE 1024 // max filename length
 #define SEED 1
 /* increase this to reduce probability of random error */
@@ -104,10 +104,10 @@ public:
     int end = range.end();
     
     
-    Perturb(&(points->p[0].coord),sizeof(points->dim*sizeof(float)),BER);
+    Perturb(points->p[0].coord,sizeof(points->dim*sizeof(float)),BER);
 
     for(int kk=begin; kk!=end; kk++) {
-    Perturb(&(points->p[kk].coord),sizeof(points->dim*sizeof(float)),BER);
+        Perturb(points->p[kk].coord,sizeof(points->dim*sizeof(float)),BER);
       myhiz += dist(points->p[kk], points->p[0],
 			 ptDimension)*points->p[kk].weight;
     }
@@ -127,9 +127,9 @@ struct CenterCreate {
     int begin = range.begin();
     int end = range.end();
     
-    Perturb(&(points->p[0].coord),sizeof(points->dim*sizeof(float)),BER);
+    Perturb(points->p[0].coord,sizeof(points->dim*sizeof(float)),BER);
      for( int k = begin; k!=end; k++ )    {
-        Perturb(&(points->p[k].coord),sizeof(points->dim*sizeof(float)),BER);
+        Perturb(points->p[k].coord,sizeof(points->dim*sizeof(float)),BER);
        float distance = dist(points->p[k],points->p[0],points->dim);
        points->p[k].cost = distance * points->p[k].weight;
        points->p[k].assign=0;
@@ -167,9 +167,9 @@ public:
       total_cost += local_total;
     }
     else {
-        Perturb(&(points->p[i].coord),sizeof(points->dim*sizeof(float)),BER);
+        Perturb(points->p[i].coord,sizeof(points->dim*sizeof(float)),BER);
       for(int k = begin; k!=end; k++ )  {
-        Perturb(&(points->p[k].coord),sizeof(points->dim*sizeof(float)),BER);
+        Perturb(points->p[k].coord,sizeof(points->dim*sizeof(float)),BER);
 	float distance = dist(points->p[i],points->p[k],points->dim);
 	if( i && distance*points->p[k].weight < points->p[k].cost )  {
 	  points->p[k].cost = distance * points->p[k].weight;
@@ -635,8 +635,8 @@ void shuffle(Points *points)
   Point temp;
   for (i=0;i<points->num-1;i++) {
     j=(lrand48()%(points->num - i)) + i;
-    Perturb(&(points->p[i].coord),sizeof(points->dim*sizeof(float)),BER);
-    Perturb(&(points->p[j].coord),sizeof(points->dim*sizeof(float)),BER);
+    Perturb(points->p[i].coord,sizeof(points->dim*sizeof(float)),BER);
+    Perturb(points->p[j].coord,sizeof(points->dim*sizeof(float)),BER);
     temp = points->p[i];
     points->p[i] = points->p[j];
     points->p[j] = temp;
@@ -1347,6 +1347,7 @@ int selectfeasible_fast(Points *points, int **feasible, int kmin, int pid, pthre
 float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
 	       int pid, pthread_barrier_t* barrier )
 {
+  //fprintf(stderr,"Pid %d, Starting Kmedian procedure\n",pid);
   int i;
   double cost;
   double lastcost;
@@ -1370,17 +1371,16 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
   if( pid == nproc-1 ) k2 = points->num;
 
   
-  //fprintf(stderr,"Starting Kmedian procedure\n");
   printf("pid %d, %i points in %i dimensions\n", pid, numberOfPoints, ptDimension);
 
   int grain_size = points->num / ((NUM_DIVISIONS));
   if(grain_size==0)
     {
       
-    Perturb(&(points->p[0].coord),sizeof(points->dim*sizeof(float)),BER);
+    Perturb(points->p[0].coord,sizeof(points->dim*sizeof(float)),BER);
       for (long kk=0;kk < points->num; kk++ ) 
         {
-          Perturb(&(points->p[kk].coord),sizeof(points->dim*sizeof(float)),BER);
+          Perturb(points->p[kk].coord,sizeof(points->dim*sizeof(float)),BER);
           hiz += dist(points->p[kk], points->p[0],
                   ptDimension)*points->p[kk].weight;
         }
@@ -1527,9 +1527,9 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
 
 
   double myhiz = 0;
-          Perturb(&(points->p[0].coord),sizeof(points->dim*sizeof(float)),BER);
+          Perturb(points->p[0].coord,sizeof(points->dim*sizeof(float)),BER);
   for (long kk=k1;kk < k2; kk++ ) {
-          Perturb(&(points->p[kk].coord),sizeof(points->dim*sizeof(float)),BER);
+          Perturb(points->p[kk].coord,sizeof(points->dim*sizeof(float)),BER);
     myhiz += dist(points->p[kk], points->p[0],
 		      ptDimension)*points->p[kk].weight;
   }
@@ -1715,7 +1715,7 @@ struct pkmedian_arg_t
 void* localSearchSub(void* arg_) {
 
   pkmedian_arg_t* arg= (pkmedian_arg_t*)arg_;
-    printf("pid %d: localSearchSub(),",arg->pid);
+  printf("pid %d: localSearchSub(),",arg->pid);
   pkmedian(arg->points,arg->kmin,arg->kmax,arg->kfinal,arg->pid,arg->barrier);
 
   return NULL;
@@ -1855,7 +1855,7 @@ void outcenterIDs( Points* centers, long* centerIDs, char* outfile ) {
       fprintf(fp, "%u\n", centerIDs[i]);
       fprintf(fp, "%lf\n", centers->p[i].weight);
       for( int k = 0; k < centers->dim; k++ ) {
-	fprintf(fp, "%lf ", centers->p[i].coord[k]);
+        fprintf(fp, "%lf ", centers->p[i].coord[k]);
       }
       fprintf(fp,"\n\n");
     }
@@ -1895,11 +1895,15 @@ void streamCluster( PStream* stream,
 
     char label[64];
 
+    FILE* fp;
+    fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "a+");
+
   for( int i = 0; i < chunksize; i++ ) {
     sprintf(label,"points.p[%i].coord",i);
     points.p[i].coord = &block[i*dim];
-    annotate_address_home(label,(long unsigned int)(points.p[i].coord),dim*sizeof(float));
+    annotate_address_home(fp,label,(long unsigned int)(points.p[i].coord),dim*sizeof(float));
   }
+  fclose(fp);
 
   Points centers;
   centers.dim = dim;

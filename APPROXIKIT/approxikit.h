@@ -1,4 +1,5 @@
 #define MAX_THREAD 65
+
 int pertubations;
 int perturbed_bytes;
 
@@ -10,8 +11,12 @@ void approxikit_init()
 
 void approxikit_status()
 {
-    printf("APPROXIKIT total pertubations = %d\n",pertubations);
-    printf("APPROXIKIT total bytes pertubed = %d\n",perturbed_bytes);
+    FILE * fp;
+    printf("writing approxikit status \n");
+    fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_perturbations.txt", "a+");
+    fprintf(fp,"APPROXIKIT total pertubation call = %d\n",pertubations);
+    fprintf(fp,"APPROXIKIT total bytes involved = %d\n",perturbed_bytes);
+    fclose(fp);
 }
 
 char BitFlip(char v, int b)
@@ -40,16 +45,14 @@ void Perturb(void *addr, unsigned int size, double ber)
     perturbed_bytes+=size;
 }
 // ---------------------------------------------------------------------------
-void annotate_address_home(char * label,long unsigned int address, int size)
+// Note: using a single common file it's ok since annotation is done
+// before thread spawning
+void annotate_address_home(FILE* fp, char * label,long unsigned int address, int size)
 {
-    FILE * fp;
-    printf("writing annotated regions\n");
-    fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "a+");
     int granularity = 1;
     int n_controllers = 2;
     int id = (address>>granularity)%n_controllers;
     //printf("[DATA_LABEL: %s],  ahl %d, n_controllers %d, ADDRESS %lx, TILE ID %d (+%d bytes)\n", label,granularity,n_controllers,A,id,length);
     fprintf(fp,"LABEL:%s g:%d nc:%d addr:%lx size:%d\n",label,granularity,n_controllers,address,size);
-    printf("Annotating region [LABEL:%s](%lx-%lx,%d)\n",label,address,address+size,size);
-    fclose(fp);
+    //printf("Annotating region [LABEL:%s](%lx-%lx,%d)\n",label,address,address+size,size);
 }
