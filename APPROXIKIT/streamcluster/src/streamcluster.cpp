@@ -1898,6 +1898,7 @@ void streamCluster( PStream* stream,
     FILE* fp;
     fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "a+");
 
+    printf("DIM %d sizeofloat %d\n",dim,sizeof(float));
   for( int i = 0; i < chunksize; i++ ) {
     sprintf(label,"points.p[%i].coord",i);
     points.p[i].coord = &block[i*dim];

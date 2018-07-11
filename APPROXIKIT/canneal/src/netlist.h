@@ -55,6 +55,9 @@ public:
 	void print_locations(const std::string& filename);
 	void release(netlist_elem* elem);
 	netlist_elem* get_random_element(long* elem_id, long different_from, Rng* rng);
+
+    // APPROXIKIT
+    void annotate_regions();
 	
 protected:
 	unsigned _num_elements;
@@ -65,6 +68,7 @@ protected:
 	std::vector< std::vector<location_t> > _locations;//store the actual locations here
 	std::map<std::string, netlist_elem*> _elem_names;
 	netlist_elem* create_elem_if_necessary(std::string& name);
+
 	//due to the pointers, perhaps I should make the copy operator protected to prevent copying
 };
 

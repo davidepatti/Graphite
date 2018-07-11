@@ -25,6 +25,9 @@
 
 #include <stdio.h>
 
+#define BER 0
+void Perturb(void *,int size,double ber);
+
 EXTERN_ENV;
 
 include(radiosity.h)
@@ -79,6 +82,12 @@ static void _foreach_element(Element *elem, void (*func)(), long   arg1, long pr
 
     void (*_func)(Element *, long, long) = (void (*)(Element *, long, long))func;
 
+    Perturb(&elem->ev1->p,sizeof(Vertex),BER);
+    Perturb(&elem->ev2->p,sizeof(Vertex),BER);
+    Perturb(&elem->ev3->p,sizeof(Vertex),BER);
+    Perturb(&elem->ev1->col,sizeof(Rgb),BER);
+    Perturb(&elem->ev2->col,sizeof(Rgb),BER);
+    Perturb(&elem->ev3->col,sizeof(Rgb),BER);
     /* Apply function to this node */
     _func( elem, arg1, process_id ) ;
 }

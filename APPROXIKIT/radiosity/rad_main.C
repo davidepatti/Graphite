@@ -320,7 +320,10 @@ int main(int argc, char *argv[])
 
             /*	print_fork_time(0) ; */
 
-            print_statistics( stdout, 0 ) ;
+            FILE * fp;
+            fp = fopen("/sim/graphite/results/latest/radiostats.txt","a+");
+            print_statistics( fp, 0 ) ;
+            fclose(fp);
         }
     else
         {
@@ -754,6 +757,7 @@ void utility_tools(long val)
     long val = g_get_choice_val( ap, &choices[3] ) ;
 #endif
 
+    val = CHOICE_UTIL_STAT_FILE;
     switch( val )
         {
         case CHOICE_UTIL_PS:

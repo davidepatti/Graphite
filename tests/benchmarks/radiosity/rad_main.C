@@ -31,12 +31,15 @@
 #endif
 #endif
 
+#include <stdlib.h>
+#include "approxikit.h"
+
+
 /* ANL macro initialization */
 
 MAIN_ENV;
 
 include(radiosity.h)
-
 
 
   /***************************************
@@ -152,6 +155,10 @@ int main(int argc, char *argv[])
     long total_wait_time, max_wait_time, min_wait_time;
     long total_vertex_time, max_vertex_time, min_vertex_time;
 
+    // APPROXIKIT
+    
+    approxikit_init();
+
     /* Parse arguments */
     parse_args(argc, argv) ;
     choices[2].init_value = model_selector ;
@@ -171,6 +178,22 @@ int main(int argc, char *argv[])
 
     /* Allocate global shared memory and initialize */
     global = (Global *) G_MALLOC(sizeof(Global)) ;
+
+     FILE* fp;
+     fp = fopen ("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt", "a+");
+
+     char label[100];
+
+    for (int i=0;i<MAX_ELEMVERTICES;i++)
+    {
+        sprintf(label,"global->elemvertex_buf[%i].p",i);
+        annotate_address_home(fp,label,(long unsigned int)&(global->elemvertex_buf[i].p),sizeof(Vertex));
+        sprintf(label,"global->elemvertex_buf[%i].col",i);
+        annotate_address_home(fp,label,(long unsigned int)&(global->elemvertex_buf[i].col),sizeof(Rgb));
+    }
+
+    fclose(fp);
+
     if( global == 0 )
         {
             printf( "Can't allocate memory\n" ) ;
@@ -297,7 +320,10 @@ int main(int argc, char *argv[])
 
             /*	print_fork_time(0) ; */
 
-            print_statistics( stdout, 0 ) ;
+            FILE * fp;
+            fp = fopen("/sim/graphite/results/latest/radiostats.txt","a+");
+            print_statistics( fp, 0 ) ;
+            fclose(fp);
         }
     else
         {
@@ -308,6 +334,7 @@ int main(int argc, char *argv[])
             g_start( expose_callback,
                     N_SLIDERS, sliders, N_CHOICES, choices ) ;
         }
+    approxikit_status();
     MAIN_END;
     exit(0) ;
 }
@@ -730,6 +757,7 @@ void utility_tools(long val)
     long val = g_get_choice_val( ap, &choices[3] ) ;
 #endif
 
+    val = CHOICE_UTIL_STAT_FILE;
     switch( val )
         {
         case CHOICE_UTIL_PS:

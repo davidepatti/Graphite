@@ -1545,7 +1545,10 @@ int main(int argc, char *argv[])
 
             /*	print_fork_time(0) ; */
 
-            print_statistics( stdout, 0 ) ;
+            FILE * fp;
+            fp = fopen("/sim/graphite/results/latest/radiostats.txt","a+");
+            print_statistics( fp, 0 ) ;
+            fclose(fp);
         }
     else
         {
@@ -1611,15 +1614,15 @@ void start_radiosity(long val)
 
             /* Time stamp */
             {
-#line 388
+#line 391
 	struct timeval	FullTime;
-#line 388
+#line 391
 
-#line 388
+#line 391
 	gettimeofday(&FullTime, NULL);
-#line 388
+#line 391
 	(time_rad_start ) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 388
+#line 391
 } ;
 
 
@@ -1633,60 +1636,60 @@ void start_radiosity(long val)
 
             /* And start processing */
             {
-#line 400
+#line 403
 	long	i, Error;
-#line 400
+#line 403
 
-#line 400
+#line 403
 	for (i = 0; i < (n_processors) - 1; i++) {
-#line 400
+#line 403
 		Error = pthread_create(&PThreadTable[i], NULL, (void * (*)(void *))(radiosity), NULL);
-#line 400
+#line 403
 		if (Error != 0) {
-#line 400
+#line 403
 			printf("Error in pthread_create().\n");
-#line 400
+#line 403
 			exit(-1);
-#line 400
+#line 403
 		}
-#line 400
+#line 403
 	}
-#line 400
+#line 403
 
-#line 400
+#line 403
 	radiosity();
-#line 400
+#line 403
 };
             {
-#line 401
+#line 404
 	unsigned long	i, Error;
-#line 401
+#line 404
 	for (i = 0; i < (n_processors) - 1; i++) {
-#line 401
+#line 404
 		Error = pthread_join(PThreadTable[i], NULL);
-#line 401
+#line 404
 		if (Error != 0) {
-#line 401
+#line 404
 			printf("Error in pthread_join().\n");
-#line 401
+#line 404
 			exit(-1);
-#line 401
+#line 404
 		}
-#line 401
+#line 404
 	}
-#line 401
+#line 404
 };
             /* Time stamp */
             {
-#line 403
+#line 406
 	struct timeval	FullTime;
-#line 403
+#line 406
 
-#line 403
+#line 406
 	gettimeofday(&FullTime, NULL);
-#line 403
+#line 406
 	(time_rad_end ) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 403
+#line 406
 };
 
             /* Print out running time */
@@ -1787,29 +1790,29 @@ void start_radiosity(long val)
                         }
 
                     {
-#line 502
+#line 505
 	long	i, Error;
-#line 502
+#line 505
 
-#line 502
+#line 505
 	for (i = 0; i < (n_processors/* - 1*/) - 1; i++) {
-#line 502
+#line 505
 		Error = pthread_create(&PThreadTable[i], NULL, (void * (*)(void *))(radiosity), NULL);
-#line 502
+#line 505
 		if (Error != 0) {
-#line 502
+#line 505
 			printf("Error in pthread_create().\n");
-#line 502
+#line 505
 			exit(-1);
-#line 502
+#line 505
 		}
-#line 502
+#line 505
 	}
-#line 502
+#line 505
 
-#line 502
+#line 505
 	radiosity();
-#line 502
+#line 505
 };
 
                     /* Decompose model objects into patches and build
@@ -1824,59 +1827,59 @@ void start_radiosity(long val)
                     if( init_ray_tasks(0) )
                         {
                             {
-#line 515
+#line 518
 	unsigned long	Error, Cycle;
-#line 515
+#line 518
 	int		Temp;
-#line 515
+#line 518
    int         Cancel;
-#line 515
+#line 518
 
-#line 515
+#line 518
 	Error = pthread_mutex_lock(&(global->barrier).mutex);
-#line 515
+#line 518
 	if (Error != 0) {
-#line 515
+#line 518
 		printf("Error while trying to get lock in barrier.\n");
-#line 515
+#line 518
 		exit(-1);
-#line 515
+#line 518
 	}
-#line 515
+#line 518
 
-#line 515
+#line 518
 	Cycle = (global->barrier).cycle;
-#line 515
+#line 518
 	if (++(global->barrier).counter != (n_processors)) {
-#line 515
+#line 518
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &Cancel);
-#line 515
+#line 518
 		while (Cycle == (global->barrier).cycle) {
-#line 515
+#line 518
 			Error = pthread_cond_wait(&(global->barrier).cv, &(global->barrier).mutex);
-#line 515
+#line 518
 			if (Error != 0) {
-#line 515
+#line 518
 				break;
-#line 515
+#line 518
 			}
-#line 515
+#line 518
 		}
-#line 515
+#line 518
 		pthread_setcancelstate(Cancel, &Temp);
-#line 515
+#line 518
 	} else {
-#line 515
+#line 518
 		(global->barrier).cycle = !(global->barrier).cycle;
-#line 515
+#line 518
 		(global->barrier).counter = 0;
-#line 515
+#line 518
 		Error = pthread_cond_broadcast(&(global->barrier).cv);
-#line 515
+#line 518
 	}
-#line 515
+#line 518
 	pthread_mutex_unlock(&(global->barrier).mutex);
-#line 515
+#line 518
 };
                             process_tasks(0) ;
                         }
@@ -1885,59 +1888,59 @@ void start_radiosity(long val)
                     break ;
                 default:
                     {
-#line 522
+#line 525
 	unsigned long	Error, Cycle;
-#line 522
+#line 525
 	int		Temp;
-#line 522
+#line 525
    int         Cancel;
-#line 522
+#line 525
 
-#line 522
+#line 525
 	Error = pthread_mutex_lock(&(global->barrier).mutex);
-#line 522
+#line 525
 	if (Error != 0) {
-#line 522
+#line 525
 		printf("Error while trying to get lock in barrier.\n");
-#line 522
+#line 525
 		exit(-1);
-#line 522
+#line 525
 	}
-#line 522
+#line 525
 
-#line 522
+#line 525
 	Cycle = (global->barrier).cycle;
-#line 522
+#line 525
 	if (++(global->barrier).counter != (n_processors)) {
-#line 522
+#line 525
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &Cancel);
-#line 522
+#line 525
 		while (Cycle == (global->barrier).cycle) {
-#line 522
+#line 525
 			Error = pthread_cond_wait(&(global->barrier).cv, &(global->barrier).mutex);
-#line 522
+#line 525
 			if (Error != 0) {
-#line 522
+#line 525
 				break;
-#line 522
+#line 525
 			}
-#line 522
+#line 525
 		}
-#line 522
+#line 525
 		pthread_setcancelstate(Cancel, &Temp);
-#line 522
+#line 525
 	} else {
-#line 522
+#line 525
 		(global->barrier).cycle = !(global->barrier).cycle;
-#line 522
+#line 525
 		(global->barrier).counter = 0;
-#line 522
+#line 525
 		Error = pthread_cond_broadcast(&(global->barrier).cv);
-#line 522
+#line 525
 	}
-#line 522
+#line 525
 	pthread_mutex_unlock(&(global->barrier).mutex);
-#line 522
+#line 525
 };
                     init_radavg_tasks( RAD_AVERAGING_MODE, 0 ) ;
                     process_tasks(0) ;
@@ -1945,23 +1948,23 @@ void start_radiosity(long val)
                     process_tasks(0) ;
 
                     {
-#line 528
+#line 531
 	unsigned long	i, Error;
-#line 528
+#line 531
 	for (i = 0; i < (n_processors/* - 1*/) - 1; i++) {
-#line 528
+#line 531
 		Error = pthread_join(PThreadTable[i], NULL);
-#line 528
+#line 531
 		if (Error != 0) {
-#line 528
+#line 531
 			printf("Error in pthread_join().\n");
-#line 528
+#line 531
 			exit(-1);
-#line 528
+#line 531
 		}
-#line 528
+#line 531
 	}
-#line 528
+#line 531
 }
                         state = -1 ;
                 }
@@ -2191,6 +2194,7 @@ void utility_tools(long val)
     long val = g_get_choice_val( ap, &choices[3] ) ;
 #endif
 
+    val = CHOICE_UTIL_STAT_FILE;
     switch( val )
         {
         case CHOICE_UTIL_PS:
@@ -2262,15 +2266,15 @@ void radiosity()
     {;};
     if ((process_id == 0) || (dostats))
         {
-#line 827
+#line 831
 	struct timeval	FullTime;
-#line 827
+#line 831
 
-#line 827
+#line 831
 	gettimeofday(&FullTime, NULL);
-#line 827
+#line 831
 	(rad_start) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 827
+#line 831
 };
 
     /* POSSIBLE ENHANCEMENT:  Here is where one might pin processes to
@@ -2289,59 +2293,59 @@ void radiosity()
         {
             /* Wait till tasks are put in the queue */
             {
-#line 844
+#line 848
 	unsigned long	Error, Cycle;
-#line 844
+#line 848
 	int		Temp;
-#line 844
+#line 848
    int         Cancel;
-#line 844
+#line 848
 
-#line 844
+#line 848
 	Error = pthread_mutex_lock(&(global->barrier).mutex);
-#line 844
+#line 848
 	if (Error != 0) {
-#line 844
+#line 848
 		printf("Error while trying to get lock in barrier.\n");
-#line 844
+#line 848
 		exit(-1);
-#line 844
+#line 848
 	}
-#line 844
+#line 848
 
-#line 844
+#line 848
 	Cycle = (global->barrier).cycle;
-#line 844
+#line 848
 	if (++(global->barrier).counter != (n_processors)) {
-#line 844
+#line 848
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &Cancel);
-#line 844
+#line 848
 		while (Cycle == (global->barrier).cycle) {
-#line 844
+#line 848
 			Error = pthread_cond_wait(&(global->barrier).cv, &(global->barrier).mutex);
-#line 844
+#line 848
 			if (Error != 0) {
-#line 844
+#line 848
 				break;
-#line 844
+#line 848
 			}
-#line 844
+#line 848
 		}
-#line 844
+#line 848
 		pthread_setcancelstate(Cancel, &Temp);
-#line 844
+#line 848
 	} else {
-#line 844
+#line 848
 		(global->barrier).cycle = !(global->barrier).cycle;
-#line 844
+#line 848
 		(global->barrier).counter = 0;
-#line 844
+#line 848
 		Error = pthread_cond_broadcast(&(global->barrier).cv);
-#line 844
+#line 848
 	}
-#line 844
+#line 848
 	pthread_mutex_unlock(&(global->barrier).mutex);
-#line 844
+#line 848
 };
             /* Then perform ray-gathering and BF-refinement till the
                solution converges */
@@ -2350,84 +2354,84 @@ void radiosity()
 
     if ((process_id == 0) || (dostats))
         {
-#line 851
+#line 855
 	struct timeval	FullTime;
-#line 851
+#line 855
 
-#line 851
+#line 855
 	gettimeofday(&FullTime, NULL);
-#line 851
+#line 855
 	(refine_done) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 851
+#line 855
 };
 
     {
-#line 853
+#line 857
 	unsigned long	Error, Cycle;
-#line 853
+#line 857
 	int		Temp;
-#line 853
+#line 857
    int         Cancel;
-#line 853
+#line 857
 
-#line 853
+#line 857
 	Error = pthread_mutex_lock(&(global->barrier).mutex);
-#line 853
+#line 857
 	if (Error != 0) {
-#line 853
+#line 857
 		printf("Error while trying to get lock in barrier.\n");
-#line 853
+#line 857
 		exit(-1);
-#line 853
+#line 857
 	}
-#line 853
+#line 857
 
-#line 853
+#line 857
 	Cycle = (global->barrier).cycle;
-#line 853
+#line 857
 	if (++(global->barrier).counter != (n_processors)) {
-#line 853
+#line 857
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &Cancel);
-#line 853
+#line 857
 		while (Cycle == (global->barrier).cycle) {
-#line 853
+#line 857
 			Error = pthread_cond_wait(&(global->barrier).cv, &(global->barrier).mutex);
-#line 853
+#line 857
 			if (Error != 0) {
-#line 853
+#line 857
 				break;
-#line 853
+#line 857
 			}
-#line 853
+#line 857
 		}
-#line 853
+#line 857
 		pthread_setcancelstate(Cancel, &Temp);
-#line 853
+#line 857
 	} else {
-#line 853
+#line 857
 		(global->barrier).cycle = !(global->barrier).cycle;
-#line 853
+#line 857
 		(global->barrier).counter = 0;
-#line 853
+#line 857
 		Error = pthread_cond_broadcast(&(global->barrier).cv);
-#line 853
+#line 857
 	}
-#line 853
+#line 857
 	pthread_mutex_unlock(&(global->barrier).mutex);
-#line 853
+#line 857
 };
 
     if ((process_id == 0) || (dostats))
         {
-#line 856
+#line 860
 	struct timeval	FullTime;
-#line 856
+#line 860
 
-#line 856
+#line 860
 	gettimeofday(&FullTime, NULL);
-#line 856
+#line 860
 	(vertex_start) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 856
+#line 860
 };
 
     /* Compute area-weighted radiosity value at each vertex */
@@ -2440,15 +2444,15 @@ void radiosity()
 
     if ((process_id == 0) || (dostats))
         {
-#line 867
+#line 871
 	struct timeval	FullTime;
-#line 867
+#line 871
 
-#line 867
+#line 871
 	gettimeofday(&FullTime, NULL);
-#line 867
+#line 871
 	(vertex_done) = (unsigned long)(FullTime.tv_usec + FullTime.tv_sec * 1000000);
-#line 867
+#line 871
 };
 
     if ((process_id == 0) || (dostats)) {
@@ -2682,41 +2686,41 @@ void init_global(long process_id)
 
     /* Initialize the barrier */
     {
-#line 1099
+#line 1103
 	unsigned long	Error;
-#line 1099
+#line 1103
 
-#line 1099
+#line 1103
 	Error = pthread_mutex_init(&(global->barrier).mutex, NULL);
-#line 1099
+#line 1103
 	if (Error != 0) {
-#line 1099
+#line 1103
 		printf("Error while initializing barrier.\n");
-#line 1099
+#line 1103
 		exit(-1);
-#line 1099
+#line 1103
 	}
-#line 1099
+#line 1103
 
-#line 1099
+#line 1103
 	Error = pthread_cond_init(&(global->barrier).cv, NULL);
-#line 1099
+#line 1103
 	if (Error != 0) {
-#line 1099
+#line 1103
 		printf("Error while initializing barrier.\n");
-#line 1099
+#line 1103
 		pthread_mutex_destroy(&(global->barrier).mutex);
-#line 1099
+#line 1103
 		exit(-1);
-#line 1099
+#line 1103
 	}
-#line 1099
+#line 1103
 
-#line 1099
+#line 1103
 	(global->barrier).counter = 0;
-#line 1099
+#line 1103
 	(global->barrier).cycle = 0;
-#line 1099
+#line 1103
 };
     {pthread_mutex_init(&(global->pbar_lock), NULL);};
     global->pbar_count = 0 ;

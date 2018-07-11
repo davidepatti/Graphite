@@ -41,6 +41,7 @@
 using namespace std;
 
 void Perturb(void *addr, unsigned int size, double ber);
+void annotate_address_home(FILE* fp,char* label,long unsigned int addr,int size);
 
 void netlist::release(netlist_elem* elem)
 {
@@ -110,6 +111,19 @@ netlist_elem* netlist::get_random_element(long* elem_id, long different_from, Rn
     Perturb(elem,sizeof(netlist_elem),BER);
 	return elem;
 }
+
+void netlist::annotate_regions()
+{
+    FILE* fp;
+    fp = fopen("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt","a+");
+    for (int i=0;i<_chip_size;i++)
+    {
+        annotate_address_home(fp,"netlist",(long unsigned int)&(_elements[i]),sizeof(netlist_elem));
+    }
+
+    fclose(fp);
+}
+
 
 
 //*****************************************************************************************

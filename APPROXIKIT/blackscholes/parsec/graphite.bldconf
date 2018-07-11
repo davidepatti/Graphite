@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# graphite.bldconf - file containing global information necessary to build
+#                    PARSEC with the Graphite multicore simulator
+
+source ${PARSECDIR}/pkgs/apps/blackscholes/parsec/gcc-hooks.bldconf
+source ${PARSECDIR}/config/gcc-hooks.bldconf
+
+# Enable PARSEC hooks
+CFLAGS="${CFLAGS} -DENABLE_GRAPHITE -I${GRAPHITE_HOME}/common/user"
+CXXFLAGS="${CXXFLAGS} -DENABLE_GRAPHITE -I${GRAPHITE_HOME}/common/user"
+LDFLAGS="${LDFLAGS} -static -u CarbonStartSim -u CarbonStopSim -u pthread_create -u pthread_join -L${GRAPHITE_HOME}/lib -L${GRAPHITE_HOME}/contrib/dsent -L${GRAPHITE_HOME}/contrib/mcpat -L${GRAPHITE_HOME}/contrib/db_utils"
+LIBS="${LIBS} -lcarbon_sim -ldsent_contrib -lmcpat -ldb_utils -ldb -lboost_filesystem-mt -lboost_system-mt -pthread -lstdc++ -lm"

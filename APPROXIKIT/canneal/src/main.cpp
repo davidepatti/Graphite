@@ -108,12 +108,9 @@ int main (int argc, char * const argv[]) {
 	//now that we've read in the commandline, run the program
 	netlist my_netlist(filename);
 	
+    // APPROXIKIT wrapper
+    my_netlist.annotate_regions();
 
-    FILE* fp;
-    fp = fopen("/sim/graphite/results/latest/APPROXIKIT_annotated_regions.txt","a+");
-    annotate_address_home(fp, "netlist",(long unsigned int)&my_netlist,sizeof(my_netlist));
-    fclose(fp);
-    
 	annealer_thread a_thread(&my_netlist,num_threads,swaps_per_temp,start_temp,number_temp_steps);
 
 	
