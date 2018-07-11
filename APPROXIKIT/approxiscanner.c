@@ -1,5 +1,6 @@
 #include <stdio.h>
-#define MAX_REGIONS 10000
+#include <string.h>
+#define MAX_REGIONS 200000
 #define MAX_THREADS 65
 #define NOT_VALID 0
 
@@ -61,8 +62,10 @@ int main(int argc, char *argv[])
         regions[current_region].size = size;
         current_region++;
     }
-    total_regions = current_region;
+
     fclose(fp);
+    total_regions = current_region;
+    printf("Total regions loaded %d\n",total_regions);
 
     if ((fp = fopen(argv[2], "r")) == NULL)
     {
@@ -70,13 +73,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    int c = 0;
     while (fgets(buf, sizeof(buf), fp) != NULL)
     {
+	c++;
         buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
         //printf("Reading-> %s\n", buf);
         sscanf(buf,"DRAM addr:%lx size:%d src:%d dst:%d\n",&address,&size,&src,&dst);
         //printf("Reading access addr:%lx size:%d src:%d dst:%d\n",address,size,src,dst);
 
+	if (c%1000==0)
+	    printf("%d mem ref entries processed...\n",c);
         for (i = 0; i <total_regions;i++)
         {
             int region_start = regions[i].address;
@@ -87,6 +94,7 @@ int main(int argc, char *argv[])
             if ( address_start <= region_end && address_end >= region_start)
             {
                 communications[src][dst]++;
+		break;
             }
         }
 
