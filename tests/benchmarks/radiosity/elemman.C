@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 
-#define BER 0
+#define BER 1e-5
 void Perturb(void *,int size,double ber);
 
 EXTERN_ENV;

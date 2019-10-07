@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
         for (i = 0; i <total_regions;i++)
         {
             int region_start = regions[i].address;
-            int region_end = regions[i].address+regions[i].size;
+            int region_end = regions[i].address+regions[i].size-1;
             int address_end = address + size;
             int address_start = address;
 
